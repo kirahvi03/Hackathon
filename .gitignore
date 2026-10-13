@@ -1,0 +1,65 @@
+# ---- Node / web ----
+node_modules/
+.pnpm-store/
+.pnpm-debug.log*
+npm-debug.log*
+yarn-error.log*
+.pnpm-workspace-state.json
+
+# build output
+dist/
+build/
+out/
+.next/
+.nuxt/
+.turbo/
+.vite/
+coverage/
+*.tsbuildinfo
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+ENV/
+.python-version
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# ---- secrets / local config ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+service-account*.json
+.secrets/
+
+# ---- editors / OS ----
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.example
+.idea/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- scratch / hackathon artifacts ----
+tmp/
+temp/
+scratch/
+*.log
+!pnpm-lock.yaml
