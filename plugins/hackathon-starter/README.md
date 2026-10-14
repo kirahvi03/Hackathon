@@ -58,3 +58,31 @@ dsh plugin --profile desktop add "C:\Users\19371\Documents\deepseek-harness\defa
 槽位 key 的完整目录见研究报告第 3 节（`docs/dsh-plugin-development-report.md`），
 例如 `conversation.composer.dock`、`conversation.chat.node`、`shell.overlay`、
 `tool.call.toolview`、`settings.section`、`plugins.detail.section`。
+
+## 故障排查
+
+| 现象 | 原因 | 处理 |
+| --- | --- | --- |
+| 装完界面里看不到 | `desktop` profile **未开启 HMR**，新 bundle 要重启才生效 | 重启 DSH |
+| 插件卡片出现但报 `error` | 该 bundle 已选中但加载失败 | 在插件页面取消选择即可回滚，不会卡住启动 |
+| 报 `ERR_MODULE_NOT_FOUND: @deepseek-ai/dsh-tools` | 本插件以 `link:`（符号链接）方式安装，Node 默认按真实路径解析，可能找不到宿主内的官方包 | 见下方说明 |
+| 报 `incompatible-version` | 插件的 DSH peer 版本与宿主不符 | 按提示用 `dsh plugin allow-version` 显式豁免，或改 peer 版本 |
+
+**关于 peer 解析**：官方包（`@deepseek-ai/*`）不在 npm 上，它们在 `app.asar` 内由宿主提供。
+安装前的版本门控会校验 `peerDependencies`（本插件的 `0.2.0-rc.2` 精确匹配已通过校验），
+所以正常情况下宿主会满足这些 peer。若 `link:` 安装确实触发解析失败，改为常规安装方式：
+
+```powershell
+# 用 tarball 而非符号链接安装，使其落进 profile 的 node_modules
+cd C:\Users\19371\Documents\deepseek-harness\default-workspace\plugins
+pnpm pack hackathon-starter
+dsh plugin --profile desktop add "<生成的 .tgz 绝对路径>"
+```
+
+## 已登记的宿主元数据
+
+`package.json` 里除 `dsh.bundle.patch` 外，还按官方 `DshPackageManifest` 声明了：
+
+- `dsh.manifestVersion: 1` —— 清单格式版本
+- `engines.dsh: "0.2.0-rc.2"` —— 作者声明的兼容运行时（与 peer 门控互补）
+- `dsh.client` —— 浏览器半的加载方式与依赖顺序
