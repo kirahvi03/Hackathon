@@ -76,12 +76,24 @@ pip install -r requirements.txt
 
 ### 3.4 推送到 GitHub
 
+远程仓库已接好并完成首次推送：
+
+| 项 | 值 |
+| --- | --- |
+| 仓库 | <https://github.com/kirahvi03/Hackathon>（public） |
+| remote | `origin` |
+| 分支 | `main`，已设置上游跟踪 `origin/main` |
+
+日常提交：
+
 ```powershell
-git remote add origin https://github.com/kirahvi03/<仓库名>.git
-git push -u origin main
+git add -A
+git commit -m "feat: ..."
+git push
 ```
 
-首次推送会用 Git Credential Manager 完成认证（本机已有 `kirahvi03` 的凭据，通常无感）。
+认证由 Git Credential Manager 自动完成（本机已存 `kirahvi03` 的 token，含 `repo` + `workflow` 权限），
+正常情况不会再弹出登录。
 
 ---
 
