@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "黑客松起步插件",
+    "description": "提供一个 plugin_ping 工具和一个输入框徽标，用来验证 Host 与 Client 两个扩展点都已打通。"
+  }
+}

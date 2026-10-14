@@ -1,0 +1,7 @@
+# 本 bundle 的补丁层：把一个插件行 insert 进 profile 的插件树。
+# 注意 YAML 方言的语义：按 id 覆盖是**整段 config 替换**，不是深合并。
+- insert:
+    - id: hackathon-starter
+      name: '@hackathon/dsh-starter-plugin'
+      config:
+        greeting: 'Hello from the DSH hackathon starter plugin'

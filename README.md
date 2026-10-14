@@ -1,7 +1,17 @@
-# DSH 黑客松工作区
+# Hackathon -- Plug-In
 
-本仓库是本机为参加 **DSH 黑客松** 准备的开发工作区。仓库本身只包含环境配置与工具脚本，
-项目代码可以直接建在这里。
+本仓库是 **DSH 黑客松的插件方向**工作区（远程仓库
+[kirahvi03/Hackathon--Plug-In](https://github.com/kirahvi03/Hackathon--Plug-In)）。
+内容分两部分：
+
+1. **本机开发环境**的配置与自检脚本（第 1–3 节）
+2. **DSH 插件骨架** `plugins/hackathon-starter/`（第 4 节），可直接改造为参赛作品
+
+游戏方向的仓库在另一处：[Hackathon--Game](https://github.com/kirahvi03/Hackathon--Game)
+（本地路径 `..\hackathon-game`）。
+
+插件体系的完整研究报告见 [`docs/dsh-plugin-development-report.md`](docs/dsh-plugin-development-report.md)
+（58KB，含官方 API 导出名、slot key 目录、模板出处与未能确定事项清单）。
 
 ---
 
@@ -80,7 +90,7 @@ pip install -r requirements.txt
 
 | 项 | 值 |
 | --- | --- |
-| 仓库 | <https://github.com/kirahvi03/Hackathon>（public） |
+| 仓库 | <https://github.com/kirahvi03/Hackathon--Plug-In>（public） |
 | remote | `origin` |
 | 分支 | `main`，已设置上游跟踪 `origin/main` |
 
@@ -97,7 +107,43 @@ git push
 
 ---
 
-## 4. 注意事项
+## 4. DSH 插件骨架（`plugins/hackathon-starter/`）
+
+本机 DSH 是 **0.2.0-rc.2**，插件框架为 **Cordis 4**。一个插件包 = 一个 bundle，
+由 `package.json` 的 `dsh.bundle.patch` 指向 `cordis.patch.yml`，后者把插件行 insert 进 profile 的插件树。
+
+骨架同时演示两个扩展点：
+
+| 半边 | 文件 | 内容 |
+| --- | --- | --- |
+| Host | `index.js` | 具名导出 `{ Config, apply, inject, name }`，用 `ctx.tools.register(defineTool({...}))` 注册工具 `plugin_ping` |
+| Client | `client.js` | `window.__ModuleLoader__.load` + `ctx.slots.register` 往 `conversation.composer.dock` 插一个徽标 |
+
+每个 API 字段都对照官方实现 `@deepseek-ai/dsh-tool-todo` 抄写（不是猜测）：
+`name` / `description` / `parameters` / `output.{schema,render}` / `execute(args, exec)` / `presentCall(args)`。
+
+**语法自检**（无需安装任何依赖）：
+
+```powershell
+node --check .\plugins\hackathon-starter\index.js
+node --check .\plugins\hackathon-starter\client.js
+```
+
+**安装到 profile**（转发给内置 pnpm，必须用绝对路径）：
+
+```powershell
+dsh plugin --profile desktop add "C:\Users\19371\Documents\deepseek-harness\default-workspace\plugins\hackathon-starter"
+```
+
+> ⚠️ 尚未替你执行安装：`desktop` 是当前运行中的这个应用独占管理的 profile，
+> 安装后需重启才生效，可能打断正在进行的会话。要装的话说一声。
+
+> ℹ️ 官方包（`@deepseek-ai/dsh-tools` 等）**不在 npm 上**，它们打包在 `app.asar` 内。
+> 插件通过 `peerDependencies` 声明版本要求，由宿主提供实现，因此**不要自己 `pnpm add` 这些包**。
+
+---
+
+## 5. 注意事项
 
 - **不要在 DSH 会话里直接 `.\script.ps1`**：DSH 托管的 shell 对脚本加载有额外限制，
   会报 “未对文件进行数字签名”。加上 `-ExecutionPolicy Bypass` 用子进程运行即可：
@@ -111,13 +157,24 @@ git push
 
 ---
 
-## 5. 目录结构
+## 6. 目录结构
 
 ```
 .
-├─ README.md              本文件
-├─ .gitignore             忽略规则（Node / Python / 密钥 / 编辑器）
-├─ .gitattributes         行尾符与二进制文件规则
+├─ README.md                              本文件
+├─ .gitignore                             忽略规则（Node / Python / 密钥 / 编辑器）
+├─ .gitattributes                         行尾符与二进制文件规则
+├─ docs/
+│  └─ dsh-plugin-development-report.md    DSH 插件开发研究报告（58KB）
+├─ plugins/
+│  └─ hackathon-starter/                  ← 插件骨架，从这里改造
+│     ├─ package.json                     bundle 清单（dsh.bundle.patch / dsh.client）
+│     ├─ cordis.patch.yml                 把插件行 insert 进 profile
+│     ├─ index.js                         Host 半边：注册 plugin_ping 工具
+│     ├─ client.js                        Client 半边：输入框下方徽标
+│     ├─ icon.svg                         插件卡片图标
+│     ├─ locale/{zh,en}.json              显示名称与描述
+│     └─ README.md                        骨架的改造指引
 └─ scripts/
-   └─ env-check.ps1       环境自检脚本
+   └─ env-check.ps1                       环境自检脚本
 ```

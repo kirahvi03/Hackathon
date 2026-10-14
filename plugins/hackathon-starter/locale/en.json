@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Hackathon Starter",
+    "description": "Adds a plugin_ping tool and a composer badge, proving both the host and client extension points work."
+  }
+}
